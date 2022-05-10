@@ -31,7 +31,7 @@
 			<label for="exampleInputPassword1" class="form-label">Password</label>
 			<input type="password" class="form-control" id="password" name="password" min-length="12" required>
 			<div class="invalid-feedback">
-				Password minimal 12
+				Password minimal 12, menggunakan 1 Capital, 2 nonalfabet
 			</div>
 		</div>
 		<div class="mb-3">
@@ -55,19 +55,67 @@
 
 		$('.is-invalid').removeClass('is-invalid');	
 
+		email = email.replace(/\s/g, '');
 		result = email.substr(email.length  - 15);
-
-		if (p1.length<12) {
+		
+		cek = CekPass(p1);
+		if(cek==false){
 			$('#password').addClass('is-invalid');
+			return false;
 		}
+
 		if (p2!=p1) {
 			$('#password2').addClass('is-invalid');
+			return false;
 		}
+
 		if (result!='@rumahweb.co.id') {
 			$('#email').addClass('is-invalid');
+			return false;
 		}
 		
-
+		$.ajax({
+			url:"https://reqres.in/api/register",
+			type:"POST",
+			data:{
+				email:email,
+				password:p1
+			},
+			beforeSend: function() {
+				$('#loadingModal').modal('show');
+            },
+			success:function(res){
+				if(res.token!=''){
+					alert('Success !');
+				}
+			}
+		})
 
 	})
+	function CekPass(p) 
+	{ 
+		a = true;
+		if(p.length<12){
+			$('#password').next().html("Panjang password min 12 karakter");
+			a = false;
+		}
+		if(!/[A-Z]/.test(p)){
+			$('#password').next().html("Tidak ada huruf capital");
+			a = false;
+		}
+		if(!/[a-z]/.test(p)){
+			$('#password').next().html("Tidak ada huruf kecil");
+			a = false;
+		}
+		if(!/[0-9]/.test(p)){
+			
+			$('#password').next().html("Tidak ada angka");
+			a = false;
+		}
+		if(!/[!@#$%^&*]*[!@#$%^&*]/.test(p)){
+			$('#password').next().html("Tidak ada Nonalfabet");
+			a = false;
+		}
+		return a;
+	}
 </script>

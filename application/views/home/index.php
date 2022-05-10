@@ -234,19 +234,30 @@
 	$('#hapus-user').click(function(){
 		id = $(this).attr('data-id');
 		$('#deleteModal').modal('hide');
-		$('#loadingModal').modal('show');
+		
 		$.ajax({
 			url: "https://reqres.in/api/users/"+id,
 			type:"DELETE",
 			dataType:"JSON",
+			beforeSend:function(){
+				$('#loadingModal').modal('show');
+				// $('*').click(function(e){e.preventDefault();});
+				window.addEventListener("click", (e) => {
+					e.stopPropagation();
+					e.stopImmediatePropagation();
+					e.preventDefault();
+				}, true);
+			},
 			success: function(res, textStatus, xhr){
 				setTimeout(function() {
 					$('#loadingModal').modal('hide');
 					if(xhr.status==204){
 						TampilAlert('alertSuccess');
+						
 					}else{
 						TampilAlert('alertDanger');
 					}
+					window.location.href="<?=base_url()?>home";
         		}, 3000);
 				
 				
